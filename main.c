@@ -62,11 +62,11 @@ int main(int argc, char *argv[]){
 	unsiglong nways = count_("ways", fin);;
 
 	//nós de origem e destino
-//	unsiglong node_start = 240949599;
-//	unsiglong node_goal = 240950218;
+	unsiglong node_start = 240949599;
+	unsiglong node_goal = 240950218;
 
-	unsiglong node_start = 1;
-	unsiglong node_goal = 6;
+//	unsiglong node_start = 1;
+//	unsiglong node_goal = 6;
 
 
 
@@ -356,6 +356,9 @@ void astar(Node *nodes, unsiglong nnodes, unsiglong start, unsiglong goal){
 
 		if(cnode->id == gl_node->id){
 			printf("\ncnode.id == glnode.id\ncaminho encontrado\n");
+
+			pause();
+
 			q_backtrack(close, qel);
 			break;
 			

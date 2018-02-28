@@ -3,12 +3,20 @@
 typedef unsigned long unsiglong;
 
 
+
+
+
+
+
+
+
 //estrutura das filas
 typedef struct {
 	//h = custo até o destino, g = custo até o anterior, f = soma dos custos
-	double g, h, f;
+	long double g, h, f;
 	Node *node, *node_par;
 	void *par;
+	int wq;
 } Qel;
 
 
@@ -149,14 +157,25 @@ int q_inqueue(Queue* q, unsiglong node_id){
 }
 
 void q_backtrack(Queue* q, Qel* qel){
-	unsiglong i;
-	Qel* qel_par = qel->par;
+
+	Qel* qel_par = (Qel*)qel->par;
 
 	printf("caminho de volta %lu ", qel->node->id);
+
+	pause();
+
+	printf("Node id: %11lu | distance %10.2Lf | NOME\n",qel->node->id, qel->h);
+
 	while(qel_par != NULL){
-		printf("%lu ",qel_par->node->id);
-		qel_par = qel_par->par;
+
+		printf("Node id: %11lu | distance %Lf | NOME\n",
+				qel_par->node->id, 
+				qel_par->h);
+		
+
+		qel_par = (Qel*)(qel_par->par);
 	}
+
 	
 	return;
 }

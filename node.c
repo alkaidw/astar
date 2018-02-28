@@ -4,7 +4,7 @@ typedef unsigned long unsiglong;
 typedef struct {
 	unsiglong id;	 	// Node identification
 	char *name;
-	double lat, lon;	// Node position
+	long double lat, lon;	// Node position
 	short nsucc;	// Node successors: weighted edges
 	unsiglong *successors;
 	
@@ -19,14 +19,14 @@ typedef struct {
 
 short add_successor(Node* node, unsiglong id);
 short weighted_Node(Node* node);
-double distance_Nodes(Node* a, Node* b);
+long double distance_Nodes(Node* a, Node* b);
 
 NodeVector* new_NodeVector(unsiglong len);
 unsiglong add_Node(NodeVector *nv, Node node);
 unsiglong len_NodeVector(NodeVector* nv);
 void destroy_NodeVector(NodeVector* nv);
 unsiglong *insert(unsiglong *vet, int count, unsiglong a);
-double haversine(double lat1, double lon1, double lat2, double lon2);
+long double haversine(long double lat1, long double lon1, long double lat2, long double lon2);
 
 
 void print_Node(Node* no);
@@ -48,7 +48,7 @@ short weighted_Node(Node* node){
 
 }
 
-double distance_Nodes(Node* a, Node* b){
+long double distance_Nodes(Node* a, Node* b){
 
 	return haversine(a->lat, a->lon, b->lat, b->lon);
 	
@@ -135,19 +135,32 @@ unsiglong *insert(unsiglong *vet, int count, unsiglong a){
 
 
 
-double haversine(double lat1, double lon1, double lat2, double lon2){
+long double haversine(long double lat1, long  double lon1, long  double lat2, long  double lon2){
 
-	double R = 6371e3;
-	double phi_1 = toRadians(lat1);
-	double phi_2 = toRadians(lat2);
-	double delta_phi = toRadians(abs(lat2-lat1));
-	double delta_lambda = toRadians(abs(lon2-lon1));
-	double a = sin(delta_phi/2.0) * sin(delta_phi/2.0) +
+//	puts("HAVERSINE");
+//	printf("latlon %Lf, %Lf\n", lat1, lon1);
+//	printf("latlon %Lf, %Lf\n", lat2, lon2);
+
+	long double R = 6371e3;
+	//printf("%Lf\n", R);
+	long double phi_1 = toRadians(lat1);
+//	printf("%Lf\n", phi_1);
+	long double phi_2 = toRadians(lat2);
+//	printf("%Lf\n", phi_2);
+	long double delta_phi = toRadians(fabs(lat2-lat1));
+//	printf("deltaphi%Lf\n", delta_phi);
+	long double delta_lambda = toRadians(fabs(lon2-lon1));
+//	printf("%Lf\n", delta_lambda);
+	long double a = sin(delta_phi/2.0) * sin(delta_phi/2.0) +
 			cos(phi_1) * cos(phi_2) *
 			sin(delta_lambda/2.0) * sin(delta_lambda/2.0);
-	double c = 2 * atan2(sqrt(a), sqrt((1-a)));
-	double d = R * c;
+//	printf("%Lf\n", a);
+	long double c = 2 * atan2(sqrt(a), sqrt((1-a)));
+//	printf("%Lf\n", c);
+	long double d = R * c;
+//	printf("%Lf\n", d);
 
+//	printf("d = %Lf\n", d);
 	return d;
 }
 
@@ -155,7 +168,7 @@ double haversine(double lat1, double lon1, double lat2, double lon2){
 void print_Node(Node* no){
 	puts("--------------------");
 	printf("node_id: %lu\n", no->id);
-	printf("lat/lon: [%.3f,%.3f]\n", no->lat, no->lon);
+	printf("lat/lon: [%.3Lf,%.3Lf]\n", no->lat, no->lon);
 	printf("nsucc: %d\n", no->nsucc);
 	printf("sucessores: ");
 	for(int i=0; i<no->nsucc; ++i)

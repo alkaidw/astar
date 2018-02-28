@@ -62,9 +62,16 @@ int main(int argc, char *argv[]){
 	unsiglong nways = count_("ways", fin);;
 
 	//nós de origem e destino
-	unsiglong node_start = 240949599;
-	unsiglong node_goal = 240950218;
+	//unsiglong node_start = 240949599;
+	//unsiglong node_goal =  195977239;
 
+
+//	cataluna
+	unsiglong node_start = 8670491;
+	unsiglong node_goal = 8670523;
+
+
+//	teste 1
 //	unsiglong node_start = 1;
 //	unsiglong node_goal = 6;
 
@@ -269,16 +276,16 @@ int main(int argc, char *argv[]){
 	//printf("\n%f\n", haversine(23,15,42,8));
 //		open
 
+	
 	puts("Astar");
-	unsiglong a = 8670498;
+//	unsiglong a = 8670498;
 
-	Node* no = bsearch(&node_goal, nodes, nnodes, sizeof(Node), compare_ids);
-	if(no == NULL)
-		puts("nao achou");
-	else
-		puts("achou");
+	Node* no;
+	(bsearch(&node_start, nodes, nnodes, sizeof(Node), compare_ids) != NULL)? puts("no inicial ok"):puts("no inicial não encontrado");
+	(bsearch(&node_goal, nodes, nnodes, sizeof(Node), compare_ids) != NULL)? puts("no inicial ok"):puts("no destino não encontrado");
 
-	pause();
+//	free(nodes);
+	//pause();
 
 
 	astar(nodes, nnodes, node_start, node_goal);
@@ -297,7 +304,7 @@ void astar(Node *nodes, unsiglong nnodes, unsiglong start, unsiglong goal){
 
 
 
-	pause();
+	//pause();
 
 	Node* idx_start = (Node*) bsearch(&start, nodes, nnodes, sizeof(Node), compare_ids);
 
@@ -331,33 +338,55 @@ void astar(Node *nodes, unsiglong nnodes, unsiglong start, unsiglong goal){
 	qel->g = 0;
 	qel->f = qel->h + qel->g;
 	qel->node_par = NULL;
+	qel->par = NULL;
 
 	q_store(open, qel);
-
+	qel->wq=1;
 	unsiglong count = 0;
 
 
+/*
+	printf("nos %lu\n", nnodes);
+	printf("qelH %Lf\n", qel->h);
+	printf("latlon %Lf, %Lf\n", st_node->lat, st_node->lon);
+	printf("latlon %Lf, %Lf\n", gl_node->lat, gl_node->lon);
+
+	printf("latlon %Lf\n", haversine(gl_node->lat, gl_node->lon, st_node->lat, st_node->lon));
+
+
+
+
+	printf("latlon real %Lf\n", haversine(41.231982, 1.690731, 41.232461, 1.694275));
+
+	printf("latlon %Lf\n", haversine(42.134561, 1.134581, 41.187341, 1.145321));
+*/
+
+
+	pause();
 
 	while(!is_empty_Queue(open)){
 	
-//		printf("%lu", count++);
+		//printf("%lu\n", count++);
 
 		qel = q_retrieve(open); //não é necessário o teste do retrieve
 		q_store(close, qel);
-		//q_sort(close);		
-		//q_sort(open);
+		qel->wq=2;
+
+
+//		q_sort(close);		
+//		q_sort(open);
 
 		cnode = qel->node;		
 
-		//printf("%lu ", cnode->id);
-		print_Node(cnode);
-		q_resume(open, "aberta");
-		q_resume(close, "fechada");
+
+//		print_Node(cnode);
+//		q_resume(open, "aberta");
+//		q_resume(close, "fechada");
 
 		if(cnode->id == gl_node->id){
 			printf("\ncnode.id == glnode.id\ncaminho encontrado\n");
 
-			pause();
+			//pause();
 
 			q_backtrack(close, qel);
 			break;
@@ -370,15 +399,20 @@ void astar(Node *nodes, unsiglong nnodes, unsiglong start, unsiglong goal){
 		for(i=0; i < cnode->nsucc; ++i){
 
 
+			// gargalo
 			unsiglong succ_id = qel->node->successors[i];
-			if(q_inqueue(open, succ_id) || q_inqueue(close, succ_id))
+			if(/*q_inqueue(open, succ_id) || */ q_inqueue(close, succ_id))
 				continue;
 
 
-
+			
 			idx_tmp = bisearch(nodes, qel->node->successors[i], nnodes);
 			node_tmp = nodes+idx_tmp;
 			
+
+
+
+
 			qel_tmp = new_Qel(node_tmp, cnode);
 
 			qel_tmp->h = distance_Nodes(node_tmp, gl_node);
@@ -387,12 +421,28 @@ void astar(Node *nodes, unsiglong nnodes, unsiglong start, unsiglong goal){
 
 			qel_tmp->par = (Qel*)qel;
 			qel_tmp->node_par = cnode;
+
+
+
+			long double tentativeG = qel->g + distance_Nodes(qel->node, node_tmp);
+
+/*
+
+			printf("%Lf, %Lf\n", qel->g, qel_tmp->g);
+			printf("distancia %Lf\n", distance_Nodes(qel->node, node_tmp));
+
+			if(tentativeG >= qel_tmp->g)
+				continue;
+*/
+
+
 			
 			q_store(open, qel_tmp);
+			qel_tmp->wq= 1;
 		}
 		
-		//q_sort(close);		
-		//q_sort(open);
+//		q_sort(close);		
+		q_sort(open);
 
 	}
 
@@ -473,5 +523,6 @@ unsiglong count_(char *str, FILE *fin){
 
 void pause(void){
 	puts("pausa");
+	putchar('\a');
 	getchar();
 }
